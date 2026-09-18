@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bray Exclusive Royal Spa — Booking</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+        :root {--gold: #d4af37; --dark: #0f0f1a; --card: #1a1a2e; --success: #25d366;}
+        body{background:var(--dark);color:#fff;min-height:100vh;}
+        .container{max-width:480px;margin:0 auto;padding:20px 15px;padding-bottom:40px;}
+        .header{text-align:center;padding:25px 0;}
+        .header h1{font-size:1.4em;color:var(--gold);}
+        .step-indicator{display:flex;justify-content:center;gap:8px;margin-bottom:25px;}
+        .step{width:36px;height:36px;border-radius:50%;background:#2a2a3f;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:14px;transition:0.3s;}
+        .step.active{background:var(--gold);color:#000;}
+        .step.completed{background:var(--success);color:#fff;}
+        .step-line{height:3px;background:#2a2a3f;flex:1;align-self:center;max-width:30px;}
+        .step-line.active{background:var(--gold);}
+        .card{background:var(--card);border-radius:16px;padding:20px;margin-bottom:15px;border:1px solid rgba(212,175,55,0.15);}
+        .card h2{font-size:1.1em;margin-bottom:15px;color:var(--gold);}
+        label{display:block;margin:12px 0 6px;font-size:0.95em;color:#ddd;}
+        input, select, textarea{width:100%;padding:12px 14px;background:rgba(255,255,255,0.05);border:1px solid rgba(212,175,55,0.25);border-radius:8px;color:#fff;font-size:15px;}
+        input:focus, select:focus, textarea:focus{outline:none;border-color:var(--gold);}
+        .option-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+        .option-btn{padding:14px 10px;background:rgba(255,255,255,0.03);border:1px solid rgba(212,175,55,0.25);border-radius:8px;color:#fff;text-align:center;cursor:pointer;transition:0.2s;font-size:0.9em;}
+        .option-btn.selected{background:rgba(212,175,55,0.15);border-color:var(--gold);color:var(--gold);font-weight:500;}
+        .price-box{background:rgba(37,211,102,0.08);border:1px solid rgba(37,211,102,0.3);border-radius:10px;padding:15px;margin:20px 0;}
+        .price-row{display:flex;justify-content:space-between;padding:6px 0;font-size:0.95em;}
+        .price-total{border-top:1px dashed rgba(255,255,255,0.2);margin-top:8px;padding-top:12px;font-weight:bold;font-size:1.15em;color:var(--success);}
+        .btn{width:100%;padding:15px;border:none;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;transition:0.3s;}
+        .btn-primary{background:var(--gold);color:#000;}
+        .btn-primary:hover{background:#e0c060;}
+        .btn-wa{background:var(--success);color:#fff;margin-top:10px;}
+        .btn-wa:hover{background:#1fb855;}
+        .btn-secondary{background:transparent;border:1px solid #666;color:#aaa;}
+        .nav-buttons{display:flex;gap:10px;margin-top:20px;}
+        .nav-buttons button{flex:1;}
+        .hidden{display:none !important;}
+        .serlok-note{font-size:0.85em;color:#888;margin-top:5px;}
+        .booking-id{text-align:center;padding:10px;background:rgba(212,175,55,0.1);border-radius:8px;margin-bottom:15px;}
+        .booking-id span{font-family:monospace;color:var(--gold);font-weight:bold;font-size:1.1em;}
+        .success-icon{text-align:center;font-size:60px;margin-bottom:10px;}
+        .back-link{display:block;text-align:center;margin-top:20px;color:var(--gold);text-decoration:none;font-size:0.95em;}
+        .back-link:hover{text-decoration:underline;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👑 Bray Exclusive Royal Spa</h1>
+            <p style="color:#888;font-size:0.9em;margin-top:5px;">Formulir Pemesanan</p>
+        </div>
+
+        <!-- Langkah Indikator -->
+        <div class="step-indicator">
+            <div class="step active" id="step1-ind">1</div>
+            <div class="step-line active" id="line1"></div>
+            <div class="step" id="step2-ind">2</div>
+            <div class="step-line" id="line2"></div>
+            <div class="step" id="step3-ind">3</div>
+            <div class="step-line" id="line3"></div>
+            <div class="step" id="step4-ind">4</div>
+        </div>
+
+        <!-- LANGKAH 1: Lokasi -->
+        <div id="step1">
+            <div class="card">
+                <h2>📍 Langkah 1 — Lokasi</h2>
+                
+                <label>Area Layanan *</label>
+                <select id="area" required>
+                    <option value="">— Pilih Area —</option>
+                    <option value="Bali">Bali</option>
+                    <option value="Jakarta">Jakarta</option>
+                    <option value="Bogor">Bogor</option>
+                    <option value="Depok">Depok</option>
+                    <option value="Tangerang">Tangerang</option>
+                    <option value="Bekasi">Bekasi</option>
+                    <option value="Cimahi">Cimahi</option>
+                </select>
+
+                <label>Kota / Daerah Spesifik *</label>
+                <input type="text" id="kota" placeholder="Contoh: Seminyak / Kebayoran Baru" required>
+
+                <label>Jenis Lokasi *</label>
+                <div class="option-grid">
+                    <div class="option-btn" data-val="Hotel" onclick="selectOption(this,'lokasiTipe')">🏨 Hotel</div>
+                    <div class="option-btn" data-val="Villa" onclick="selectOption(this,'lokasiTipe')">🏡 Villa</div>
+                    <div class="option-btn" data-val="Rumah" onclick="selectOption(this,'lokasiTipe')">🏠 Rumah</div>
+                    <div class="option-btn" data-val="Apartemen" onclick="selectOption(this,'lokasiTipe')">🏢 Apartemen</div>
+                </div>
+                <input type="hidden" id="lokasiTipe" required>
+
+                <label>Alamat Lengkap / Nama Tempat *</label>
+                <textarea id="alamat" rows="2" placeholder="Nama hotel + nomor kamar, atau alamat lengkap" required></textarea>
+                
+                <label style="margin-top:5px;">
+                    <input type="checkbox" id="confirmLoc" required> Saya konfirmasi alamat di atas sudah benar
+                </label>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" disabled>← Kembali</button>
+                    <button class="btn btn-primary" onclick="goStep(2)">Lanjut →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- LANGKAH 2: Treatment & Waktu -->
+        <div id="step2" class="hidden">
+            <div class="card">
+                <h2>💆 Langkah 2 — Treatment & Waktu</h2>
+
+                <label>Pilih Treatment *</label>
+                <select id="treatment" onchange="updateTotal()" required>
+                    <option value="">— Pilih Treatment —</option>
+                    <option value="Traditional Balinese Massage">Traditional Balinese Massage</option>
+                    <option value="Deep Tissue Massage">Deep Tissue Massage</option>
+                    <option value="Thai Massage">Thai Massage</option>
+                    <option value="Reflexology">Reflexology</option>
+                    <option value="Couple Massage">Couple Massage</option>
+                    <option value="Four Hand Massage">Four Hand Massage</option>
+                    <option value="Body to Body">Body to Body</option>
+                </select>
+
+                <label>Durasi *</label>
+                <div class="option-grid">
+                    <div class="option-btn" data-val="60" onclick="selectOption(this,'durasi');updateTotal()">60 Menit</div>
+                    <div class="option-btn" data-val="90" onclick="selectOption(this,'durasi');updateTotal()">90 Menit</div>
+                    <div class="option-btn" data-val="120" onclick="selectOption(this,'durasi');updateTotal()">120 Menit</div>
+                </div>
+                <input type="hidden" id="durasi" required>
+
+                <label>Jumlah Tamu</label>
+                <select id="jumlahTamu">
+                    <option value="1">1 Orang</option>
+                    <option value="2">2 Orang</option>
+                </select>
+
+                <label>Tanggal Booking *</label>
+                <input type="date" id="tanggal" required>
+
+                <label>Jam Kedatangan *</label>
+                <input type="time" id="jam" required>
+
+                <div class="price-box" id="priceDisplay" style="display:none;">
+                    <div class="price-row"><span>Treatment:</span><span id="dispTreatment"></span></div>
+                    <div class="price-row"><span>Durasi:</span><span id="dispDurasi"></span></div>
+                    <div class="price-row price-total"><span>Total:</span><span id="dispTotal"></span></div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="goStep(1)">← Kembali</button>
+                    <button class="btn btn-primary" onclick="goStep(3)">Lanjut →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- LANGKAH 3: Data Diri -->
+        <div id="step3" class="hidden">
+            <div class="card">
+                <h2>👤 Langkah 3 — Data Pemesan</h2>
+
+                <label>Nama Lengkap Anda *</label>
+                <input type="text" id="nama" placeholder="Contoh: Sari Dewi" required>
+
+                <label>Nomor WhatsApp *</label>
+                <input type="tel" id="wa" placeholder="Contoh: 08123456789" required>
+
+                <label>Catatan / Permintaan Khusus</label>
+                <textarea id="catatan" rows="3" placeholder="Contoh: Terapis pria, dll. (opsional)"></textarea>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="goStep(2)">← Kembali</button>
+                    <button class="btn btn-primary" onclick="goStep(4)">Ringkasan →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- LANGKAH 4: Ringkasan & Konfirmasi -->
+        <div id="step4" class="hidden">
+            <div class="card">
+                <h2>✅ Ringkasan Pesanan</h2>
+
+                <div class="booking-id">
+                    ID Booking: <span id="bookingId"></span>
+                </div>
+
+                <div style="font-size:0.95em;line-height:1.8;">
+                    <p><strong>Nama:</strong> <span id="rNama"></span></p>
+                    <p><strong>WhatsApp:</strong> <span id="rWa"></span></p>
+                    <p><strong>Area:</strong> <span id="rArea"></span> — <span id="rKota"></span></p>
+                    <p><strong>Lokasi:</strong> <span id="rLokasi"></span> — <span id="rAlamat"></span></p>
+                    <p><strong>Tanggal:</strong> <span id="rTanggal"></span> pukul <span id="rJam"></span></p>
+                    <p><strong>Treatment:</strong> <span id="rTreatment"></span></p>
+                    <p><strong>Durasi:</strong> <span id="rDurasi"></span> Menit</p>
+                    <p><strong>Jumlah Tamu:</strong> <span id="rJumlah"></span> Orang</p>
+                    <p><strong>Catatan:</strong> <span id="rCatatan"></span></p>
+                </div>
+
+                <div class="price-box">
+                    <div class="price-row price-total" style="font-size:1.2em;">
+                        <span>Total Pembayaran:</span>
+                        <span id="rTotal"></span>
+                    </div>
+                </div>
+
+                <p style="font-size:0.85em;color:#888;text-align:center;margin:10px 0;">Pembayaran di tempat / sesuai instruksi admin</p>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="goStep(3)">← Kembali</button>
+                </div>
+                <button class="btn btn-wa" onclick="kirimKeWA()">💬 Konfirmasi via WhatsApp</button>
+            </div>
+        </div>
+
+        <!-- Sukses -->
+        <div id="successStep" class="hidden">
+            <div class="card" style="text-align:center;padding:40px 20px;">
+                <div class="success-icon">✅</div>
+                <h2>Berhasil!</h2>
+                <p style="color:#aaa;margin:10px 0;">Terima kasih! Pesanan Anda telah dikirim ke WhatsApp kami.</p>
+                <p style="color:#d4af37;font-weight:bold;">ID Booking: <span id="successId"></span></p>
+                <p style="color:#888;font-size:0.9em;margin-top:15px;">Kami akan segera menghubungi Anda untuk konfirmasi ketersediaan terapis. Terima kasih 🙏</p>
+                <a href="index.html" class="back-link">← Kembali ke Halaman Utama</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Harga
+        const harga = {
+            "Traditional Balinese Massage": {60: 250000, 90: 300000, 120: 350000},
+            "Deep Tissue Massage": {60: 250000, 90: 300000, 120: 350000},
+            "Thai Massage": {60: 250000, 90: 300000, 120: 350000},
+            "Reflexology": {60: 250000, 90: 300000, 120: 350000},
+            "Couple Massage": {60: 800000, 90: 850000, 120: 1000000},
+            "Four Hand Massage": {60: 650000, 90: 750000, 120: 800000},
+            "Body to Body": {60: 800000, 90: 1000000, 120: 1200000}
+        };
+
+        let currentStep = 1;
+        let bookingID = '';
+
+        // Pilihan tombol
+        function selectOption(el, inputId) {
+            document.querySelectorAll(`[data-val]`).forEach(e => e.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById(inputId).value = el.getAttribute('data-val');
+        }
+
+        // Update harga
+        function updateTotal() {
+            const tr = document.getElementById('treatment').value;
+            const dr = parseInt(document.getElementById('durasi').value);
+            const box = document.getElementById('priceDisplay');
+            
+            if(tr && dr) {
+                const price = harga[tr][dr];
+                box.style.display = 'block';
+                document.getElementById('dispTreatment').textContent = tr;
+                document.getElementById('dispDurasi').textContent = dr + ' Menit';
+                document.getElementById('dispTotal').textContent = 'Rp ' + price.toLocaleString('id-ID');
+            } else {
+                box.style.display = 'none';
+            }
+        }
+
+        // Pindah langkah
+        function goStep(num) {
+            // Validasi langkah sebelumnya
+            if(num > currentStep) {
+                if(!validateStep(currentStep)) {
+                    alert('Mohon lengkapi data yang wajib diisi!');
+                    return;
+                }
+            }
+
+            // Sembunyikan semua
+            for(let i=1; i<=4; i++) {
+                document.getElementById('step'+i).classList.add('hidden');
+                document.getElementById('step'+i+'-ind').classList.remove('active','completed');
+                document.getElementById('line'+i).classList.remove('active');
+            }
+
+            // Tampilkan langkah baru
+            document.getElementById('step'+num).classList.remove('hidden');
+            document.getElementById('step'+num+'-ind').classList.add('active');
+            
+            // Tandai selesai
+            for(let i=1; i<num; i++) {
+                document.getElementById('step'+i+'-ind').classList.add('completed');
+                document.getElementById('line'+i).classList.add('active');
+            }
+
+            // Isi ringkasan di langkah 4
+            if(num === 4) {
+                isiRingkasan();
+            }
+
+            currentStep = num;
+            window.scrollTo({top:0,behavior:'smooth'});
+        }
+
+        // Validasi
+        function validateStep(step) {
+            if(step === 1) {
+                return document.getElementById('area').value && 
+                       document.getElementById('kota').value && 
+                       document.getElementById('lokasiTipe').value && 
+                       document.getElementById('alamat').value &&
+                       document.getElementById('confirmLoc').checked;
+            }
+            if(step === 2) {
+                return document.getElementById('treatment').value && 
+                       document.getElementById('durasi').value && 
+                       document.getElementById('tanggal').value && 
+                       document.getElementById('jam').value;
+            }
+            if(step === 3) {
+                const wa = document.getElementById('wa').value;
+                return document.getElementById('nama').value && wa.length >=10;
+            }
+            return true;
+        }
+
+        // Isi ringkasan
+        function isiRingkasan() {
+            // Buat ID Booking
+            const now = new Date();
+            bookingID = 'BRY'+now.getFullYear()+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+Math.floor(Math.random()*9000+1000);
+            
+            document.getElementById('bookingId').textContent = bookingID;
+            document.getElementById('rNama').textContent = document.getElementById('nama').value;
+            document.getElementById('rWa').textContent = document.getElementById('wa').value;
+            document.getElementById('rArea').textContent = document.getElementById('area').value;
+            document.getElementById('rKota').textContent = document.getElementById('kota').value;
+            document.getElementById('rLokasi').textContent = document.getElementById('lokasiTipe').value;
+            document.getElementById('rAlamat').textContent = document.getElementById('alamat').value;
+            document.getElementById('rTanggal').textContent = document.getElementById('tanggal').value;
+            document.getElementById('rJam').textContent = document.getElementById('jam').value;
+            document.getElementById('rTreatment').textContent = document.getElementById('treatment').value;
+            document.getElementById('rDurasi').textContent = document.getElementById('durasi').value;
+            document.getElementById('rJumlah').textContent = document.getElementById('jumlahTamu').value;
+            document.getElementById('rCatatan').textContent = document.getElementById('catatan').value || 'Tidak ada';
+            
+            const tr = document.getElementById('treatment').value;
+            const dr = parseInt(document.getElementById('durasi').value);
+            document.getElementById('rTotal').textContent = 'Rp ' + harga[tr][dr].toLocaleString('id-ID');
+        }
+
+        // Kirim ke WhatsApp
+        function kirimKeWA() {
+            isiRingkasan(); // Pastikan data terbaru
+            
+            const pesan = `👑 *RESERVASI BRAY EXCLUSIVE ROYAL SPA*
+
+📋 *DATA PEMESANAN:*
+━━━━━━━━━━━━━━━━━━━━━━━━
+🆔 ID Booking: ${bookingID}
+
+👤 Nama: ${document.getElementById('nama').value}
+📱 WhatsApp: ${document.getElementById('wa').value}
+
+📍 Area: ${document.getElementById('area').value} — ${document.getElementById('kota').value}
+🏨 Lokasi: ${document.getElementById('lokasiTipe').value}
+📝 Alamat: ${document.getElementById('alamat').value}
+
+📅 Tanggal: ${document.getElementById('tanggal').value}
+⏰ Jam: ${document.getElementById('jam').value}
+
+💆 Treatment: ${document.getElementById('treatment').value}
+⏱️ Durasi: ${document.getElementById('durasi').value} Menit
+👥 Jumlah Tamu: ${document.getElementById('jumlahTamu').value} Orang
+
+💰 Total: Rp ${harga[document.getElementById('treatment').value][parseInt(document.getElementById('durasi').value)].toLocaleString('id-ID')}
+
+📝 Catatan: ${document.getElementById('catatan').value || 'Tidak ada'}
+
+━━━━━━━━━━━━━━━━━━━━━━━━
+Mohon konfirmasi ketersediaan terapis. Terima kasih 🙏`;
+
+            const url = "https://wa.me/6285739581203?text=" + encodeURIComponent(pesan);
+            
+            // Tampil halaman sukses & buka WA
+            window.open(url, '_blank');
+            
+            // Tampil halaman sukses
+            document.getElementById('step4').classList.add('hidden');
+            document.getElementById('successStep').classList.remove('hidden');
+            document.getElementById('successId').textContent = bookingID;
+        }
+    </script>
+</body>
+</html>
