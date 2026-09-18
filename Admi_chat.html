@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel — Bray Royal Spa</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+        :root {--gold: #d4af37; --dark: #0f0f1a; --card: #1a1a2e; --success: #25d366; --warning: #f59e0b; --danger: #ef4444; --info: #3b82f6;}
+        body{background:var(--dark);color:#fff;min-height:100vh;padding:20px 15px;}
+        .container{max-width:700px;margin:0 auto;}
+        .header{text-align:center;margin-bottom:25px;}
+        .header h1{font-size:1.5em;color:var(--gold);margin-bottom:5px;}
+        .header p{color:#888;font-size:0.9em;}
+        .admin-lock{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:10px 14px;margin-bottom:20px;display:flex;align-items:center;gap:8px;font-size:0.85em;color:#fca5a5;}
+        
+        /* === INFO ORDER === */
+        .order-card{background:var(--card);border-radius:16px;padding:20px;margin-bottom:20px;border:1px solid rgba(212,175,55,0.15);}
+        .order-id{font-family:monospace;color:var(--gold);font-size:1.1em;margin-bottom:15px;}
+        .status-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:0.85em;font-weight:500;margin-bottom:15px;}
+        .status-green{background:rgba(37,211,102,0.15);color:var(--success);}
+        .status-yellow{background:rgba(245,158,11,0.15);color:var(--warning);}
+        .status-blue{background:rgba(59,130,246,0.15);color:var(--info);}
+        
+        .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:20px;}
+        .info-box{background:rgba(255,255,255,0.02);border-radius:10px;padding:12px 14px;}
+        .info-box label{font-size:0.75em;color:#888;margin-bottom:4px;display:block;}
+        .info-box .val{font-size:0.95em;}
+        .info-box .val.muted{color:#666;font-family:monospace;font-size:0.9em;}
+        
+        /* === AREA PERCAKAPAN === */
+        .chat-area{background:rgba(0,0,0,0.2);border-radius:12px;padding:16px;max-height:500px;overflow-y:auto;}
+        .msg-row{display:flex;margin-bottom:12px;gap:10px;}
+        .msg-row.tamu{justify-content:flex-start;}
+        .msg-row.terapis{justify-content:flex-end;}
+        .msg-label{font-size:0.7em;color:#888;width:50px;flex-shrink:0;padding-top:4px;}
+        .msg-bubble{padding:10px 14px;border-radius:12px;max-width:75%;font-size:0.95em;line-height:1.4;}
+        .tamu .msg-bubble{background:#2a2a4a;border-bottom-left-radius:4px;}
+        .terapis .msg-bubble{background:#1e4d3a;border-bottom-right-radius:4px;}
+        .msg-time{font-size:0.7em;color:#666;margin-top:4px;}
+        .warning-msg{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#fcd34d;padding:8px 12px;border-radius:8px;font-size:0.85em;}
+        
+        .divider{height:1px;background:rgba(255,255,255,0.08);margin:15px 0;}
+        .back-link{color:var(--gold);text-decoration:none;font-size:0.9em;display:inline-block;margin-bottom:20px;}
+        .empty-chat{text-align:center;padding:30px;color:#666;font-size:0.9em;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Kembali ke Beranda</a>
+        
+        <div class="header">
+            <h1>👑 Admin Panel — Percakapan Order</h1>
+            <p>Audit Percakapan Sistem Bray</p>
+        </div>
+
+        <div class="admin-lock">
+            🔐 Akses Terbatas — Hanya untuk Operasional & Penanganan Komplain
+        </div>
+
+        <!-- INFO ORDER -->
+        <div class="order-card">
+            <div class="order-id">📋 ORDER #<span id="orderId">BRY-00125</span></div>
+            <div class="status-badge status-green" id="orderStatus">🟢 Sedang Melayani</div>
+            
+            <div class="info-grid">
+                <div class="info-box">
+                    <label>👤 Nama Tamu</label>
+                    <div class="val" id="tamuNama">Andi</div>
+                </div>
+                <div class="info-box">
+                    <label>📞 No. HP Tamu</label>
+                    <div class="val muted" id="tamuHp">0812-xxxx-xxxx</div>
+                </div>
+                <div class="info-box">
+                    <label>🧑‍💼 Nama Terapis</label>
+                    <div class="val" id="terapisNama">Sari</div>
+                </div>
+                <div class="info-box">
+                    <label>📞 No. HP Terapis</label>
+                    <div class="val muted" id="terapisHp">0813-xxxx-xxxx</div>
+                </div>
+                <div class="info-box" style="grid-column:span 2;">
+                    <label>💆 Treatment</label>
+                    <div class="val" id="treatment">Deep Tissue — 90 Menit</div>
+                </div>
+                <div class="info-box" style="grid-column:span 2;">
+                    <label>📍 Lokasi</label>
+                    <div class="val" id="lokasi">Hotel ABC, Lantai 5 Kamar 512</div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- AREA PERCAKAPAN -->
+            <h3 style="margin-bottom:12px;font-size:1em;color:var(--gold);">💬 Riwayat Percakapan</h3>
+            <div class="chat-area" id="chatArea">
+                <div class="empty-chat">Belum ada pesan</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === DATA ORDER ADMIN ===
+        const orderData = {
+            id: 'BRY-00125',
+            tamuNama: 'Andi',
+            tamuHp: '0812-xxxx-xxxx',
+            terapisNama: 'Sari',
+            terapisHp: '0813-xxxx-xxxx',
+            treatment: 'Deep Tissue — 90 Menit',
+            lokasi: 'Hotel ABC, Lantai 5 Kamar 512',
+            status: 'Sedang Melayani'
+        };
+
+        // === INISIALISASI ===
+        document.getElementById('orderId').textContent = orderData.id;
+        document.getElementById('tamuNama').textContent = orderData.tamuNama;
+        document.getElementById('tamuHp').textContent = orderData.tamuHp;
+        document.getElementById('terapisNama').textContent = orderData.terapisNama;
+        document.getElementById('terapisHp').textContent = orderData.terapisHp;
+        document.getElementById('treatment').textContent = orderData.treatment;
+        document.getElementById('lokasi').textContent = orderData.lokasi;
+
+        // === MUAT & TAMPILKAN RIWAYAT PERCAKAPAN ===
+        function muatPercakapan() {
+            const riwayat = JSON.parse(localStorage.getItem('chat_'+orderData.id) || '[]');
+            const chatArea = document.getElementById('chatArea');
+            
+            if(riwayat.length === 0) {
+                chatArea.innerHTML = '<div class="empty-chat">Belum ada pesan</div>';
+                return;
+            }
+            
+            chatArea.innerHTML = '';
+            riwayat.forEach(pesan => {
+                const waktu = new Date(pesan.waktu).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+                const label = pesan.pengirim === 'tamu' ? '👤 Tamu' : '🧑‍💼 Terapis';
+                const kelas = pesan.pengirim === 'tamu' ? 'tamu' : 'terapis';
+                
+                chatArea.innerHTML += `
+                    <div class="msg-row ${kelas}">
+                        <div class="msg-label">${label}<br>${waktu}</div>
+                        <div class="msg-bubble">${pesan.teks}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // Panggil saat halaman dibuka
+        muatPercakapan();
+    </script>
+</body>
+</html>
